@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @-webkit-keyframes spinner {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-center text-blue-600">Job Finder</h1>
+            <p class="text-center text-gray-600 mt-2">Find relevant jobs across multiple platforms</p>
+        </header>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Search for Jobs</h2>
+            <form id="jobSearchForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="position" class="block text-sm font-medium text-gray-700 mb-1">Position*</label>
+                        <input type="text" id="position" name="position" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="e.g., Full Stack Engineer">
+                    </div>
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                        <input type="text" id="location" name="location"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="e.g., Peshawar, Pakistan">
+                    </div>
+                    <div>
+                        <label for="experience" class="block text-sm font-medium text-gray-700 mb-1">Experience</label>
+                        <input type="text" id="experience" name="experience"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="e.g., 2 years">
+                    </div>
+                    <div>
+                        <label for="salary" class="block text-sm font-medium text-gray-700 mb-1">Salary Range</label>
+                        <input type="text" id="salary" name="salary"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="e.g., 70,000 PKR to 120,000 PKR">
+                    </div>
+                    <div>
+                        <label for="jobNature" class="block text-sm font-medium text-gray-700 mb-1">Job Nature</label>
+                        <select id="jobNature" name="jobNature"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select job nature</option>
+                            <option value="onsite">Onsite</option>
+                            <option value="remote">Remote</option>
+                            <option value="hybrid">Hybrid</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="skills" class="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+                        <input type="text" id="skills" name="skills"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="e.g., MERN, Node.js, React.js">
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <button type="submit"
+                        class="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Search Jobs
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loadingIndicator" class="hidden flex justify-center my-8">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+        </div>
+
+        <!-- Results section -->
+        <div id="resultsSection" class="hidden">
+            <h2 class="text-xl font-semibold mb-4">Search Results</h2>
+            <div id="resultsCount" class="text-gray-600 mb-4"></div>
+            <div id="jobResults" class="space-y-4"></div>
+        </div>
+
+        <!-- No results message -->
+        <div id="noResultsMessage" class="hidden text-center py-8">
+            <p class="text-gray-600">No jobs found matching your criteria. Try adjusting your search parameters.</p>
+        </div>
+
+        <footer class="mt-12 text-center text-gray-600 text-sm">
+            <p>Job Finder API - Search jobs across LinkedIn, Indeed, Google Jobs, Glassdoor, and Rozee.pk</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('jobSearchForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsCount = document.getElementById('resultsCount');
+            const jobResults = document.getElementById('jobResults');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Show loading indicator
+                loadingIndicator.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+                noResultsMessage.classList.add('hidden');
+                
+                // Get form data
+                const formData = {
+                    position: document.getElementById('position').value,
+                    location: document.getElementById('location').value || null,
+                    experience: document.getElementById('experience').value || null,
+                    salary: document.getElementById('salary').value || null,
+                    jobNature: document.getElementById('jobNature').value || null,
+                    skills: document.getElementById('skills').value || null
+                };
+                
+                try {
+                    // Make API request
+                    const response = await fetch('/api/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Hide loading indicator
+                    loadingIndicator.classList.add('hidden');
+                    
+                    // Display results
+                    if (data.relevant_jobs && data.relevant_jobs.length > 0) {
+                        resultsCount.textContent = `Found ${data.relevant_jobs.length} relevant jobs`;
+                        jobResults.innerHTML = '';
+                        
+                        data.relevant_jobs.forEach(job => {
+                            const jobCard = document.createElement('div');
+                            jobCard.className = 'bg-white rounded-lg shadow-md p-6';
+                            
+                            const relevanceScore = job.relevance_score ? 
+                                `<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Relevance: ${(job.relevance_score * 100).toFixed(0)}%</span>` : '';
+                            
+                            jobCard.innerHTML = `
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-lg font-semibold text-blue-600">${job.job_title}</h3>
+                                    ${relevanceScore}
+                                </div>
+                                <p class="text-gray-700 font-medium mt-1">${job.company}</p>
+                                <div class="mt-2 space-y-1">
+                                    ${job.location ? `<p class="text-gray-600"><span class="font-medium">Location:</span> ${job.location}</p>` : ''}
+                                    ${job.experience ? `<p class="text-gray-600"><span class="font-medium">Experience:</span> ${job.experience}</p>` : ''}
+                                    ${job.salary ? `<p class="text-gray-600"><span class="font-medium">Salary:</span> ${job.salary}</p>` : ''}
+                                    ${job.jobNature ? `<p class="text-gray-600"><span class="font-medium">Job Nature:</span> ${job.jobNature}</p>` : ''}
+                                </div>
+                                <div class="mt-4 flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Source: ${job.source}</span>
+                                    <a href="${job.apply_link}" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium">Apply Now →</a>
+                                </div>
+                            `;
+                            
+                            jobResults.appendChild(jobCard);
+                        });
+                        
+                        resultsSection.classList.remove('hidden');
+                    } else {
+                        noResultsMessage.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    loadingIndicator.classList.add('hidden');
+                    alert('An error occurred while searching for jobs. Please try again.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
