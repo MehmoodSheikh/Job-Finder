@@ -28,3 +28,4 @@ class Job(BaseModel):
     description: Optional[str] = None
     source: str
     relevance_score: Optional[float] = None
+    relevance_percentage: Optional[str] = None

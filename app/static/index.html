@@ -19,6 +19,33 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Enhanced styling for relevance percentage */
+        .bg-green-100 {
+            position: relative;
+            top: 2px;
+            font-weight: 600;
+            border: 1px solid #10b981;
+            transition: all 0.2s ease-in-out;
+        }
+        .bg-green-100:hover {
+            background-color: #ecfdf5;
+            transform: scale(1.05);
+        }
+        
+        /* Different colors based on match percentage */
+        .match-high {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .match-medium {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .match-low {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -133,6 +160,7 @@
                 
                 try {
                     // Make API request
+                    console.log('Sending search request:', formData);
                     const response = await fetch('/api/search', {
                         method: 'POST',
                         headers: {
@@ -142,6 +170,7 @@
                     });
                     
                     const data = await response.json();
+                    console.log('API Response:', data);
                     
                     // Hide loading indicator
                     loadingIndicator.classList.add('hidden');
@@ -155,8 +184,25 @@
                             const jobCard = document.createElement('div');
                             jobCard.className = 'bg-white rounded-lg shadow-md p-6';
                             
-                            const relevanceScore = job.relevance_score ? 
-                                `<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Relevance: ${(job.relevance_score * 100).toFixed(0)}%</span>` : '';
+                            // Get percentage as a number for color coding
+                            const percentValue = job.relevance_percentage ? 
+                                parseInt(job.relevance_percentage.replace('%', '')) : 
+                                (job.relevance_score ? Math.round(job.relevance_score * 100) : 0);
+
+                            // Determine color class based on percentage
+                            let colorClass = 'bg-green-100 text-green-800';
+                            if (percentValue >= 80) {
+                                colorClass = 'match-high';
+                            } else if (percentValue >= 50) {
+                                colorClass = 'match-medium';
+                            } else {
+                                colorClass = 'match-low';
+                            }
+
+                            const relevanceScore = job.relevance_percentage ? 
+                                `<span class="text-xs font-medium px-2.5 py-0.5 rounded ${colorClass}">Match: ${job.relevance_percentage}</span>` : 
+                                (job.relevance_score ? 
+                                    `<span class="text-xs font-medium px-2.5 py-0.5 rounded ${colorClass}">Relevance: ${(job.relevance_score * 100).toFixed(0)}%</span>` : '');
                             
                             jobCard.innerHTML = `
                                 <div class="flex justify-between items-start">

@@ -1,56 +1,61 @@
 """
-Updated simplified test script for the Job Finder API
+Test script for rule-based filtering that matches production API format
 """
 import json
+import logging
 from app.models.job import JobRequest, Job
-from app.services.simple_relevance_filtering import SimpleRelevanceFilteringService
+from app.services.ai_relevance_filtering import AIRelevanceFilteringService
 
-def test_relevance_filtering():
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+def test_rule_based_filtering():
     """
-    Test the relevance filtering functionality with mock data
+    Test the rule-based fallback filtering following production API format
     """
-    print("Testing relevance filtering functionality...")
+    print("Testing rule-based filtering with production API format...")
     
-    # Create a test job request
+    # Create a test job request matching the production API input format
     job_request = JobRequest(
         position="Full Stack Engineer",
         experience="2 years",
         salary="70,000 PKR to 120,000 PKR",
         jobNature="onsite",
         location="Peshawar, Pakistan",
-        skills="MERN, Node.js, Express.js, React.js, Firebase, TailwindCSS"
+        skills="full stack, MERN, Node.js, Express.js, React.js, Next.js, Firebase, TailwindCSS, CSS Frameworks, Tokens handling"
     )
     
-    print(f"Job request: {job_request.model_dump()}")
+    print(f"API Input: {json.dumps(job_request.model_dump(), indent=2)}")
     
     # Create mock jobs
     mock_jobs = create_mock_jobs()
     
     print(f"Found {len(mock_jobs)} jobs before filtering")
     
-    # Filter jobs by relevance
-    relevance_service = SimpleRelevanceFilteringService()
-    relevant_jobs = relevance_service.filter_jobs_by_relevance(mock_jobs, job_request)
+    # Filter jobs by relevance using rule-based scoring from AI service
+    ai_service = AIRelevanceFilteringService()
+    # Use the rule-based method directly
+    relevant_jobs = ai_service._score_jobs_with_rules(mock_jobs, job_request, threshold=0.2)
     
-    print(f"Found {len(relevant_jobs)} relevant jobs after filtering")
+    print(f"Found {len(relevant_jobs)} relevant jobs after rule-based filtering")
     
-    # Print the top 3 most relevant jobs
-    print("\nTop 3 most relevant jobs:")
-    for i, job in enumerate(relevant_jobs[:3], 1):
-        print(f"{i}. {job.job_title} at {job.company} - Relevance: {job.relevance_score:.2f}")
-        print(f"   Location: {job.location}")
-        print(f"   Experience: {job.experience}")
-        print(f"   Apply: {job.apply_link}")
-        print()
+    # Format the output to match production API output format
+    output = format_api_output(relevant_jobs)
     
     # Save results to a JSON file
-    save_results_to_json(relevant_jobs)
+    with open("app/tests/simple_test_results.json", "w") as f:
+        json.dump(output, f, indent=2)
     
-    return relevant_jobs
+    print("Test results saved to simple_test_results.json")
+    print("API Output Sample:")
+    print(json.dumps(output, indent=2))
+    
+    return output
 
 def create_mock_jobs():
     """
-    Create mock job data for testing
+    Create mock job data for testing that matches production data structure
     """
     jobs = [
         Job(
@@ -98,28 +103,6 @@ def create_mock_jobs():
             source="Rozee.pk"
         ),
         Job(
-            job_title="React Native Developer",
-            company="Mobile Apps Inc",
-            experience="2-4 years",
-            jobNature="onsite",
-            location="Islamabad, Pakistan",
-            salary="95,000 PKR",
-            apply_link="https://linkedin.com/job202",
-            description="React Native Developer needed for mobile app development projects.",
-            source="LinkedIn"
-        ),
-        Job(
-            job_title="DevOps Engineer",
-            company="Cloud Solutions",
-            experience="4+ years",
-            jobNature="remote",
-            location="Lahore, Pakistan",
-            salary="130,000 PKR",
-            apply_link="https://indeed.com/job303",
-            description="DevOps Engineer with AWS and Docker experience needed for our cloud infrastructure team.",
-            source="Indeed"
-        ),
-        Job(
             job_title="Full Stack JavaScript Developer",
             company="Web Wizards",
             experience="2 years",
@@ -145,24 +128,28 @@ def create_mock_jobs():
     
     return jobs
 
-def save_results_to_json(jobs):
+def format_api_output(jobs):
     """
-    Save job results to a JSON file
+    Format jobs to match production API output format exactly
     """
-    # Convert jobs to dict for JSON serialization
-    jobs_dict = {"relevant_jobs": []}
+    relevant_jobs = []
+    
     for job in jobs:
-        job_dict = job.model_dump()
-        # Convert float to string for JSON serialization
-        if job_dict.get('relevance_score') is not None:
-            job_dict['relevance_score'] = str(job_dict['relevance_score'])
-        jobs_dict["relevant_jobs"].append(job_dict)
+        # Create job dict with only the fields required in the API output
+        job_dict = {
+            "job_title": job.job_title,
+            "company": job.company,
+            "experience": job.experience or "Not specified",
+            "jobNature": job.jobNature or "Not specified",
+            "location": job.location or "Not specified",
+            "salary": job.salary or "Not specified",
+            "apply_link": job.apply_link or "",
+            "relevance_percentage": job.relevance_percentage  # Include the match percentage
+        }
+        relevant_jobs.append(job_dict)
     
-    # Save to file
-    with open("test_results.json", "w") as f:
-        json.dump(jobs_dict, f, indent=2)
-    
-    print("Test results saved to test_results.json")
+    # Format as per production API output
+    return {"relevant_jobs": relevant_jobs}
 
 if __name__ == "__main__":
-    test_relevance_filtering()
+    test_rule_based_filtering()

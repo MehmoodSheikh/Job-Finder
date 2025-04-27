@@ -1,95 +1,84 @@
 """
-API routes for the Job Finder API
+API routes for the Job Finder application
 """
-import asyncio
-from typing import List, Dict, Any, Optional
-
-from fastapi import APIRouter, HTTPException, Depends, Query
+import logging
+from typing import List, Dict, Optional
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.models.job import JobRequest, Job
-from app.scrapers.scraper_factory import ScraperFactory
-from app.services.simple_relevance_filtering import SimpleRelevanceFilteringService
-from app.core.config import settings
+# Set up logger
+logger = logging.getLogger(__name__)
 
 # Create router
 router = APIRouter()
 
-# Create scraper factory
-scraper_factory = ScraperFactory()
+class JobSearchRequest(BaseModel):
+    position: str
+    location: Optional[str] = None
+    experience: Optional[str] = None
+    jobNature: Optional[str] = None
+    salary: Optional[str] = None
+    skills: Optional[str] = None
 
-# Create relevance filtering service
-relevance_service = SimpleRelevanceFilteringService()
-
-@router.post("/search", response_model=Dict[str, List[Job]])
-async def search_jobs(job_request: JobRequest):
-    """
-    Search for jobs across multiple platforms based on the provided criteria
+# Import services after router definition
+try:
+    # Updated import path for search service
+    from app.services.search_service import SearchService
+    from app.services.ai_relevance_filtering import AIRelevanceFilteringService
     
-    Args:
-        job_request: Job search criteria
-        
-    Returns:
-        Dictionary with list of relevant jobs
+    # Initialize services
+    search_service = SearchService()
+    ai_relevance_service = AIRelevanceFilteringService()
+    logger.info("✅ Services initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize services: {e}")
+    raise
+
+@router.post("/search")
+async def search_jobs(request: JobSearchRequest):
     """
+    Search for jobs across multiple platforms with AI-powered relevance filtering
+    """
+    logger.info(f"Received search request: {request.dict()}")
+    
     try:
-        # Get all scrapers
-        scrapers = scraper_factory.get_all_scrapers()
-        
-        # Search for jobs across all platforms
-        all_jobs = []
-        tasks = []
-        
-        for scraper in scrapers:
-            task = asyncio.create_task(
-                scraper.search_jobs(
-                    position=job_request.position,
-                    location=job_request.location,
-                    experience=job_request.experience,
-                    job_nature=job_request.jobNature
-                )
-            )
-            tasks.append(task)
-        
-        # Wait for all tasks to complete
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        # Process results
-        for result in results:
-            if isinstance(result, Exception):
-                # Log the exception but continue with other results
-                print(f"Error in scraper: {result}")
-                continue
-            
-            all_jobs.extend(result)
-        
-        # Filter jobs by relevance
-        relevant_jobs = relevance_service.filter_jobs_by_relevance(
-            all_jobs, 
-            job_request,
-            threshold=settings.MIN_RELEVANCE_SCORE
+        # Search for jobs using the search service
+        all_jobs = await search_service.search_jobs(
+            position=request.position,
+            location=request.location,
+            experience=request.experience,
+            job_nature=request.jobNature
         )
         
-        return {"relevant_jobs": relevant_jobs}
+        if not all_jobs:
+            logger.warning("No jobs found from any source")
+            return {"relevant_jobs": []}
+        
+        logger.info(f"Found {len(all_jobs)} jobs before relevance filtering")
+        
+        # Filter jobs by relevance
+        try:
+            relevant_jobs = await ai_relevance_service.filter_jobs_by_relevance(
+                jobs=all_jobs,
+                job_request=request
+            )
+            logger.info(f"Returning {len(relevant_jobs)} relevant jobs")
+            return {"relevant_jobs": relevant_jobs}
+        except Exception as e:
+            logger.error(f"Error in relevance filtering: {e}")
+            # If relevance filtering fails, return all jobs
+            logger.info("Returning all jobs without relevance filtering")
+            return {"relevant_jobs": all_jobs}
     
     except Exception as e:
-        # Log the exception
-        print(f"Error in search_jobs: {e}")
-        raise HTTPException(status_code=500, detail=f"An error occurred while searching for jobs: {str(e)}")
+        logger.exception(f"Error in search_jobs: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/platforms", response_model=Dict[str, List[str]])
-async def get_platforms():
-    """
-    Get a list of available job platforms
-    
-    Returns:
-        Dictionary with list of platform names
-    """
+@router.on_event("shutdown")
+async def shutdown_event():
+    """Clean up resources when the application shuts down"""
     try:
-        platforms = scraper_factory.get_available_scrapers()
-        return {"platforms": platforms}
-    
+        await ai_relevance_service.close()
+        logger.info("Successfully closed AI relevance filtering service")
     except Exception as e:
-        # Log the exception
-        print(f"Error in get_platforms: {e}")
-        raise HTTPException(status_code=500, detail=f"An error occurred while retrieving platforms: {str(e)}")
+        logger.error(f"Error closing AI relevance filtering service: {e}")
