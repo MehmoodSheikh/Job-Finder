@@ -18,7 +18,7 @@ A scalable, AI-powered FastAPI backend that scrapes multiple job platforms, appl
 - [Deployment (Railway)](Screenshots)
 - [Sample Request and Response](#sample-request-and-response)
 - [Setup Locally](#setup-locally)
-- [Important Note](#Important-Note)
+- [Important Notice](#Important-Note)
   
 ---
 
@@ -114,6 +114,7 @@ Each job result includes:
 - Relevance Percentage (0% - 100%)
 - Short AI explanation why the job scored that relevance
 
+![AI_EXPLANATION_SS](https://github.com/MehmoodSheikh/Job-Finder/raw/main/AI_explanation.png)
 ---
 
 ## Prompt Engineering
@@ -224,7 +225,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 ---
-## 🚨 Important Notice
+## Important Notice
 
 This project implements a **hybrid retrieval logic**:  
 - **First**, it attempts to fetch job listings using **official APIs** if available.  
