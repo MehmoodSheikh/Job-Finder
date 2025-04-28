@@ -1,6 +1,6 @@
 # Services Folder - Job Finder
 
-This folder contains the **core business logic services** that power the job searching and AI-based job matching functionalities.
+This folder contains the job searching and AI-based job matching functionalities.
 
 ---
 
