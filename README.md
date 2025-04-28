@@ -162,6 +162,8 @@ Job-Finder/
 
 ```
 
+**NOTE: Each subfolder also includes its own README file explaining the working and implementation of the respective components**
+
 ## API Usage
 
 ### POST /search_jobs/
