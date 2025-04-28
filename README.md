@@ -15,7 +15,7 @@ A scalable, AI-powered FastAPI backend that scrapes multiple job platforms, appl
 - [Fallback and Error Handling](#fallback-and-error-handling)
 - [Folder Structure](#folder-structure)
 - [API Usage](#api-usage)
-- [Deployment (Railway)](Screenshots)
+- [Screenshots](#Screenshots)
 - [Sample Request and Response](#sample-request-and-response)
 - [Setup Locally](#setup-locally)
 - [Important Notice](#Important-Notice)
@@ -178,9 +178,9 @@ Job-Finder/
 
 ---
 
-### Screenshots
+## Screenshots
 
-## Sample Request and Response
+### Sample Request and Response
 
 | JSON Request SS | 
 |:------------:|
@@ -190,12 +190,14 @@ Job-Finder/
 |:-------------:|
 ![Response](https://github.com/MehmoodSheikh/Job-Finder/raw/main/JSON_response_TEST_API%20.png) 
 
-## Frontend Screenshots
+### Frontend Screenshots
 
-### Homepage
+| Homepage | 
+|:------------:|
 ![FE_1](https://github.com/MehmoodSheikh/Job-Finder/raw/main/FE_1.png)
 
-### Search Results
+| Search Results | 
+|:------------:|
 ![FE_2](https://github.com/MehmoodSheikh/Job-Finder/raw/main/FE_2.png)
 
 ---
