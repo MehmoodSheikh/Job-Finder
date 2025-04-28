@@ -18,7 +18,7 @@ A scalable, AI-powered FastAPI backend that scrapes multiple job platforms, appl
 - [Deployment (Railway)](Screenshots)
 - [Sample Request and Response](#sample-request-and-response)
 - [Setup Locally](#setup-locally)
-- [Important Notice](#Important-Note)
+- [Important Notice](#Important-Notice)
   
 ---
 
