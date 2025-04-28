@@ -1,0 +1,22 @@
+{
+  "relevant_jobs": [
+    {
+      "job_title": "Full Stack Engineer",
+      "company": "XYZ Pvt Ltd",
+      "experience": "2+ years",
+      "jobNature": "onsite",
+      "location": "Islamabad, Pakistan",
+      "salary": "100,000 PKR",
+      "apply_link": "https://linkedin.com/job123"
+    },
+    {
+      "job_title": "MERN Stack Developer",
+      "company": "ABC Technologies",
+      "experience": "2 years",
+      "jobNature": "onsite",
+      "location": "Lahore, Pakistan",
+      "salary": "90,000 PKR",
+      "apply_link": "https://indeed.com/job456"
+    }
+  ]
+}

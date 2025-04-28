@@ -1,0 +1,44 @@
+{
+  "relevant_jobs": [
+    {
+      "job_title": "MERN Stack Engineer",
+      "company": "Web Technologies",
+      "experience": "2 years",
+      "jobNature": "onsite",
+      "location": "Peshawar, Pakistan",
+      "salary": "95,000 PKR",
+      "apply_link": "https://example.com/job4",
+      "relevance_percentage": "85%"
+    },
+    {
+      "job_title": "Full Stack JavaScript Developer",
+      "company": "Tech Innovators",
+      "experience": "2-3 years",
+      "jobNature": "onsite",
+      "location": "Peshawar, Pakistan",
+      "salary": "90,000 PKR",
+      "apply_link": "https://example.com/job5",
+      "relevance_percentage": "85%"
+    },
+    {
+      "job_title": "Senior Full Stack Engineer",
+      "company": "XYZ Corp",
+      "experience": "3-5 years",
+      "jobNature": "onsite",
+      "location": "Lahore, Pakistan",
+      "salary": "120,000 PKR",
+      "apply_link": "https://example.com/job1",
+      "relevance_percentage": "55%"
+    },
+    {
+      "job_title": "Full Stack Developer",
+      "company": "ABC Inc",
+      "experience": "1-2 years",
+      "jobNature": "hybrid",
+      "location": "Karachi, Pakistan",
+      "salary": "80,000 PKR",
+      "apply_link": "https://example.com/job2",
+      "relevance_percentage": "25%"
+    }
+  ]
+}

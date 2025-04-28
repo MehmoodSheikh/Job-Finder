@@ -20,5 +20,5 @@ __pycache__/
 *.log
 
 # Ignore temporary test results
-app/tests/*.json
+#app/tests/*.json
 

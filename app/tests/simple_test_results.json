@@ -1,0 +1,64 @@
+{
+  "relevant_jobs": [
+    {
+      "job_title": "Full Stack Engineer",
+      "company": "XYZ Pvt Ltd",
+      "experience": "2+ years",
+      "jobNature": "onsite",
+      "location": "Islamabad, Pakistan",
+      "salary": "100,000 PKR",
+      "apply_link": "https://linkedin.com/job123",
+      "relevance_percentage": "100%"
+    },
+    {
+      "job_title": "MERN Stack Developer",
+      "company": "ABC Technologies",
+      "experience": "2 years",
+      "jobNature": "onsite",
+      "location": "Lahore, Pakistan",
+      "salary": "90,000 PKR",
+      "apply_link": "https://indeed.com/job456",
+      "relevance_percentage": "100%"
+    },
+    {
+      "job_title": "Full Stack JavaScript Developer",
+      "company": "Web Wizards",
+      "experience": "2 years",
+      "jobNature": "onsite",
+      "location": "Peshawar, Pakistan",
+      "salary": "85,000 PKR",
+      "apply_link": "https://glassdoor.com/job404",
+      "relevance_percentage": "100%"
+    },
+    {
+      "job_title": "MERN Stack Engineer",
+      "company": "Software House",
+      "experience": "2-3 years",
+      "jobNature": "onsite",
+      "location": "Peshawar, Pakistan",
+      "salary": "95,000 PKR",
+      "apply_link": "https://rozee.pk/job505",
+      "relevance_percentage": "100%"
+    },
+    {
+      "job_title": "Backend Engineer",
+      "company": "Digital Innovations",
+      "experience": "3 years",
+      "jobNature": "hybrid",
+      "location": "Peshawar, Pakistan",
+      "salary": "110,000 PKR",
+      "apply_link": "https://rozee.pk/job101",
+      "relevance_percentage": "30%"
+    },
+    {
+      "job_title": "Frontend Developer",
+      "company": "Tech Solutions",
+      "experience": "1-3 years",
+      "jobNature": "remote",
+      "location": "Karachi, Pakistan",
+      "salary": "80,000 PKR",
+      "apply_link": "https://glassdoor.com/job789",
+      "relevance_percentage": "24%"
+    }
+  ]
+}
